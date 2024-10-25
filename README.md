@@ -53,3 +53,5 @@ Follow these steps to set up and run the project locally:
 3. Install dependencies: `npm install` or `yarn install`
 4. Set up environment variables ( database connection string, JWT secret) you can find it in .env.example
 5. Start the backend server: `npm start` or `yarn start`
+
+To add later: pre-push commit with npm run test
