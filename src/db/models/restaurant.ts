@@ -28,7 +28,7 @@ export interface RestaurantI {
 export interface RestaurantD extends Document<RestaurantI>, RestaurantI { }
 export interface RestaurantModel extends Model<RestaurantD> { }
 
-const ALLOWED_CUISINE_TYPES = ["Français", "Italien", "Asiatique", "Américain", "Mexicain", "Indien"];
+const ALLOWED_CUISINE_TYPES = ["Fast", "Italian", "Asian", "Mexican", "Indian", "Traditionnal", "Turkish"];
 
 const restaurantSchema = new Schema<RestaurantI>(
     {
