@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { UserD } from "../db/models/user";
+import { UserD, UserModel } from "../db/models/user";
 import { MyRequest } from "../types/Express";
 import { ErrorResponse, SuccessResponse } from "../utils/Response";
 import { AuthServices } from "../services/auth/auth.service";
@@ -42,6 +42,10 @@ export const SignUp = async (req: MyRequest<UserD>, res: Response) => {
   if (result instanceof ErrorResponseC)
     return ErrorResponse(res, result.code, result.message, result.error);
 };
+
+
+
+
 
 export const AuthBack = async (req: MyRequest<UserD>, res: Response) => {
   const { stay = false } = req.body;

@@ -27,7 +27,7 @@ export const JWT_SECRET = CheckEnv(
   "BACK_SECRET",
   ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
 );
-export const EmailUser = CheckEnv(
+ export const EmailUser = CheckEnv(
   "BACK_EmailUser",
   ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
 );
