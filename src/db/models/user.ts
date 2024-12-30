@@ -2,6 +2,25 @@ import { Model, Schema, model, Document } from "mongoose";
 import bcrypt from "bcrypt";
 import { RandomEmail, validateEmail } from "../../utils/Function";
 const required = true;
+
+export interface UserI {
+  name: string;
+  phone: string;
+  email: string;
+  address?: string[];
+  password: string;
+  image?: string;
+  googleId?: string;
+  isVerified?: boolean;
+  verificationToken?: string;
+  verificationTokenExpiry?: Date;
+  resetPasswordToken?: string;
+  resetPasswordTokenExpiry?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+  role?: "admin" | "user";
+}
+
 export interface UserD extends Document<UserI>, UserI {
   comparePasswords(password: string): Promise<boolean>;
   Optimize(): OptimizedUser;
@@ -10,18 +29,26 @@ export interface UserD extends Document<UserI>, UserI {
 export interface UserModel extends Model<UserD> {
   findUser(id: string): Promise<UserI>;
 }
+
 const usersSchema = new Schema<UserI>(
   {
-    firstName: { type: String, required },
-    lastName: { type: String, required },
+    name: { type: String, required },
+    phone: { type: String, required },
     email: {
       type: String,
       required,
       validate: [validateEmail, "Please fill a valid email address"],
     },
+    address: { type: [String], default: [] },
     password: { type: String, required },
+    image: { type: String, default: null },
+    googleId: { type: String, default: null },
+    isVerified: { type: Boolean, default: false },
+    verificationToken: { type: String, default: null },
+    verificationTokenExpiry: { type: Date, default: null },
+    resetPasswordToken: { type: String, default: null },
+    resetPasswordTokenExpiry: { type: Date, default: null },
     role: { type: String, enum: ["admin", "user"], default: "user" },
-    enable: { type: Boolean, default: true },
   },
   {
     timestamps: true,
@@ -69,11 +96,15 @@ export const createUserFactory = async (
   props: Partial<UserI>,
 ): Promise<UserD> => {
   const user = new UserModel({
-    firstName: props.firstName || "John",
-    lastName: props.lastName || "Doe",
+    name: props.name || "John Doe",
+    phone: props.phone || "+213777777777",
     email: props.email || RandomEmail(),
     password: props.password || "password",
     role: props.role || "user",
+    image: props.image || null,
+    googleId: props.googleId || null,
+    address: props.address || [],
+    isVerified: props.isVerified || false,
   });
   const savedUser = await user.save();
   return savedUser;

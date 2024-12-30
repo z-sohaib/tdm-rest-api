@@ -4,10 +4,9 @@ declare interface UserAuthI {
 }
 
 declare interface UserI extends UserAuthI {
-  firstName: string;
-  lastName: string;
+  name: string;
+  phone: string;
   role: "admin" | "user";
-  enable: boolean;
 }
 
 type OptimizedUser = Omit<UserI, "password"> & { _id: string };

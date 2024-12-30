@@ -1,6 +1,6 @@
 declare interface MyPayload {
   _id: string;
-  role: "admin" | "user" | "judge";
+  role: "admin" | "user";
 }
 
 declare namespace Types {

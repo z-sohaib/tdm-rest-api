@@ -33,3 +33,7 @@ export function getCookiesSettings(stay: boolean = false): CookieOptions {
       : {}),
   };
 }
+
+export function generateRandomToken() {
+  return randomBytes(32).toString("hex");
+}

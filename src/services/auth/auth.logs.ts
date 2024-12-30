@@ -1,175 +1,245 @@
 import Logger from "../../utils/Logger";
+
 export type IAuthLogs =
   | "LOGIN_SUCCESS"
   | "MOBILE_LOGIN_SUCCESS"
   | "LOGIN_ERROR_GENERIC"
   | "LOGIN_ERROR_INVALID_INPUT"
   | "LOGIN_ERROR_EMAIL_NOT_FOUND"
-  | "LOGIN_ERROR_INCORRECT_PASSWORD_FOUND"
+  | "LOGIN_ERROR_INCORRECT_PASSWORD"
   | "LOGIN_ERROR_DISABLED_ACCOUNT"
-  | "USER_ISN_T_LOGGED"
-  | "USER_ISN_T_ADMIN"
-  | "USER_ISN_T_USER"
-  | "ADMIN_DOES_NOT_HAVE_ROLE"
-  | "ERROR_SESSION_CREDENTIALS"
-  | "ERROR_WHILE_CHECKING_CREDENTIALS"
-  | "GENERIC_CREDENTIALS_ERROR"
-  | "AUTH_BACK"
+  | "USER_NOT_LOGGED_IN"
+  | "USER_NOT_ADMIN"
+  | "USER_NOT_STANDARD_USER"
+  | "ADMIN_ROLE_NOT_ASSIGNED"
+  | "SESSION_CREDENTIALS_ERROR"
+  | "CHECK_CREDENTIALS_ERROR"
+  | "CREDENTIALS_GENERIC_ERROR"
+  | "AUTH_BACK_SUCCESS"
   | "USER_NOT_FOUND"
+  | "USER_NOT_FOUND_BY_TOKEN"
+  | "USER_NOT_FOUND_BY_EMAIL"
   | "LOGOUT_SUCCESS"
-  | "RESET_SUCCESS"
-  | "RESET_PASSWORD_SUCCESS"
-  | "RESET_ERROR_GENERIC"
-  | "REGISTER_SUCCESS"
-  | "AUTH_ERROR_GENERIC"
-  | "REGISTER_ERROR_GENERIC"
-  | "REGISTER_ERROR_INVALID_INPUT"
-  | "REGISTER_ERROR_EMAIL_EXIST"
-  | "REGISTER_ERROR_PASSWORD"
-  | "USER_ISN_T_ENABLED";
+  | "PASSWORD_RESET_SUCCESS"
+  | "RESET_PASSWORD_TOKEN_INVALID"
+  | "RESET_PASSWORD_EMAIL_SENT"
+  | "RESET_PASSWORD_GENERIC_ERROR"
+  | "REGISTRATION_SUCCESS"
+  | "AUTH_GENERIC_ERROR"
+  | "REGISTRATION_GENERIC_ERROR"
+  | "REGISTRATION_INVALID_INPUT"
+  | "REGISTRATION_EMAIL_EXISTS"
+  | "REGISTRATION_PASSWORD_ERROR"
+  | "USER_NOT_ENABLED"
+  | "USER_NOT_VERIFIED"
+  | "USER_ALREADY_VERIFIED"
+  | "USER_ROLE_NOT_ASSIGNED"
+  | "PROFILE_UPDATE_SUCCESS"
+  | "PROFILE_UPDATE_ERROR"
+  | "EMAIL_VERIFICATION_SUCCESS"
+  | "EMAIL_VERIFICATION_ERROR"
+  | "VERIFICATION_TOKEN_INVALID"
+  | "EMAIL_VERIFICATION_SENT";
 
 export const authLogs: IErrors<IAuthLogs> = {
   LOGIN_SUCCESS: {
     code: 0,
-    message:
-      'User "{email} : {lastName} {firstName}" has logged in successfully.',
+    message: 'User "{email} : {name}" has logged in successfully.',
     type: "LOGIN_SUCCESS",
   },
   MOBILE_LOGIN_SUCCESS: {
     code: 1,
-    message:
-      'User "{email} : {lastName} {firstName}" has logged in successfully from mobile.',
+    message: 'User "{email} : {name}" has logged in successfully from mobile.',
     type: "MOBILE_LOGIN_SUCCESS",
   },
   LOGIN_ERROR_GENERIC: {
     code: 2,
-    message: "Error occurred while login in user '{email}': {error}",
+    message: "An error occurred while logging in user '{email}': {error}",
     type: "LOGIN_ERROR_GENERIC",
   },
   LOGIN_ERROR_INVALID_INPUT: {
     code: 3,
-    message: "Invalid input for Log in : {input}",
+    message: "Invalid input provided for login: {input}",
     type: "LOGIN_ERROR_INVALID_INPUT",
   },
   LOGIN_ERROR_EMAIL_NOT_FOUND: {
     code: 4,
-    message: "Failed to login email doesn't exist {email}.",
+    message: "Failed to log in: email '{email}' does not exist.",
     type: "LOGIN_ERROR_EMAIL_NOT_FOUND",
   },
-  LOGIN_ERROR_INCORRECT_PASSWORD_FOUND: {
+  LOGIN_ERROR_INCORRECT_PASSWORD: {
     code: 5,
-    message: "Failed to login password incorrect {email}.",
-    type: "LOGIN_ERROR_INCORRECT_PASSWORD_FOUND",
+    message: "Failed to log in: incorrect password for email '{email}'.",
+    type: "LOGIN_ERROR_INCORRECT_PASSWORD",
   },
   LOGIN_ERROR_DISABLED_ACCOUNT: {
     code: 6,
-    message: "Failed to login to a disabled account {email}.",
+    message: "Failed to log in: account for email '{email}' is disabled.",
     type: "LOGIN_ERROR_DISABLED_ACCOUNT",
   },
-  USER_ISN_T_LOGGED: {
+  USER_NOT_LOGGED_IN: {
     code: 7,
-    message: "You aren't logged in to do this action.",
-    type: "USER_ISN_T_LOGGED",
+    message: "Action denied: the user is not logged in.",
+    type: "USER_NOT_LOGGED_IN",
   },
-  USER_ISN_T_ADMIN: {
+  USER_NOT_ADMIN: {
     code: 10,
-    message: "Logged In user isn't a admins.",
-    type: "USER_ISN_T_ADMIN",
+    message: "Action denied: the logged-in user is not an admin.",
+    type: "USER_NOT_ADMIN",
   },
-  USER_ISN_T_USER: {
+  USER_NOT_STANDARD_USER: {
     code: 20,
-    message: "Logged In user isn't a user.",
-    type: "USER_ISN_T_USER",
+    message: "Action denied: the logged-in user is not a standard user.",
+    type: "USER_NOT_STANDARD_USER",
   },
-  ADMIN_DOES_NOT_HAVE_ROLE: {
+  ADMIN_ROLE_NOT_ASSIGNED: {
     code: 11,
-    message: "Logged In admin doesn't have a role yet.",
-    type: "ADMIN_DOES_NOT_HAVE_ROLE",
+    message: "The logged-in admin does not have a role assigned.",
+    type: "ADMIN_ROLE_NOT_ASSIGNED",
   },
-  ERROR_SESSION_CREDENTIALS: {
+  SESSION_CREDENTIALS_ERROR: {
     code: 13,
-    message: "Session doesn't seem correct there is no token.",
-    type: "ERROR_SESSION_CREDENTIALS",
+    message: "Session error: no valid token found.",
+    type: "SESSION_CREDENTIALS_ERROR",
   },
-  ERROR_WHILE_CHECKING_CREDENTIALS: {
+  CHECK_CREDENTIALS_ERROR: {
     code: 14,
-    message: "Couldn't create a correct session.",
-    type: "ERROR_WHILE_CHECKING_CREDENTIALS",
+    message: "An error occurred while verifying session credentials.",
+    type: "CHECK_CREDENTIALS_ERROR",
   },
-  GENERIC_CREDENTIALS_ERROR: {
+  CREDENTIALS_GENERIC_ERROR: {
     code: 15,
-    message: "Generic error happened while loading credentials.",
-    type: "GENERIC_CREDENTIALS_ERROR",
+    message: "A generic error occurred while processing credentials.",
+    type: "CREDENTIALS_GENERIC_ERROR",
   },
-  AUTH_BACK: {
+  AUTH_BACK_SUCCESS: {
     code: 16,
-    message:
-      'User "{email} : {{lastName} {firstName}" has logged back successfully.',
-    type: "AUTH_BACK",
+    message: 'User "{email} : {name}" has successfully reauthenticated.',
+    type: "AUTH_BACK_SUCCESS",
   },
   LOGOUT_SUCCESS: {
     code: 17,
-    message:
-      'User "{email} : {lastName} {firstName}" has logged out successfully.',
+    message: 'User "{email} : {name}" has logged out successfully.',
     type: "LOGOUT_SUCCESS",
   },
   USER_NOT_FOUND: {
     code: 18,
-    message: "User {userId} not found",
+    message: "User with ID '{userId}' not found.",
     type: "USER_NOT_FOUND",
   },
-  RESET_SUCCESS: {
+  USER_NOT_FOUND_BY_TOKEN: {
+    code: 18,
+    message: "User with token '{token}' not found.",
+    type: "USER_NOT_FOUND_BY_TOKEN",
+  },
+  USER_NOT_FOUND_BY_EMAIL: {
+    code: 18,
+    message: "User with email '{email}' not found.",
+    type: "USER_NOT_FOUND_BY_EMAIL",
+  },
+  PASSWORD_RESET_SUCCESS: {
+    code: 22,
+    message: "Password reset successfully for user '{email}'.",
+    type: "PASSWORD_RESET_SUCCESS",
+  },
+  RESET_PASSWORD_TOKEN_INVALID: {
     code: 23,
-    message: "Reset password email sent successfully for {email}",
-    type: "RESET_SUCCESS",
+    message: "Invalid password reset token for '{email}'.",
+    type: "RESET_PASSWORD_TOKEN_INVALID",
   },
-  RESET_ERROR_GENERIC: {
+  RESET_PASSWORD_EMAIL_SENT: {
     code: 24,
-    message:
-      "Reset password email sent successfully for {email} with error {error}",
-    type: "RESET_ERROR_GENERIC",
+    message: "Password reset email sent successfully to '{email}'.",
+    type: "RESET_PASSWORD_EMAIL_SENT",
   },
-  RESET_PASSWORD_SUCCESS: {
+  RESET_PASSWORD_GENERIC_ERROR: {
     code: 25,
-    message: "Password has changed successfully for {user}",
-    type: "RESET_PASSWORD_SUCCESS",
-  },
-
-  REGISTER_SUCCESS: {
-    code: 26,
     message:
-      'User "{email} : {lastName} {firstName}" has registered successfully.',
-    type: "REGISTER_SUCCESS",
+      "An error occurred while sending a password reset email to '{email}': {error}",
+    type: "RESET_PASSWORD_GENERIC_ERROR",
   },
-  REGISTER_ERROR_GENERIC: {
+  REGISTRATION_SUCCESS: {
+    code: 26,
+    message: 'User "{email} : {name}" has registered successfully.',
+    type: "REGISTRATION_SUCCESS",
+  },
+  REGISTRATION_GENERIC_ERROR: {
     code: 27,
-    message: "Error occurred while registering user '{email}': {error}",
-    type: "REGISTER_ERROR_GENERIC",
+    message: "An error occurred while registering user '{email}': {error}",
+    type: "REGISTRATION_GENERIC_ERROR",
   },
-  REGISTER_ERROR_INVALID_INPUT: {
+  REGISTRATION_INVALID_INPUT: {
     code: 28,
-    message: "Invalid input for Register : {input}",
-    type: "REGISTER_ERROR_INVALID_INPUT",
+    message: "Invalid input provided during registration: {input}",
+    type: "REGISTRATION_INVALID_INPUT",
   },
-  REGISTER_ERROR_EMAIL_EXIST: {
+  REGISTRATION_EMAIL_EXISTS: {
     code: 29,
-    message: "Failed to register email already exist {email}.",
-    type: "REGISTER_ERROR_EMAIL_EXIST",
+    message: "Failed to register: email '{email}' already exists.",
+    type: "REGISTRATION_EMAIL_EXISTS",
   },
-  REGISTER_ERROR_PASSWORD: {
+  REGISTRATION_PASSWORD_ERROR: {
     code: 31,
-    message: "Password doesn't meet the requirements.",
-    type: "REGISTER_ERROR_PASSWORD",
+    message: "Failed to register: password does not meet requirements.",
+    type: "REGISTRATION_PASSWORD_ERROR",
   },
-  USER_ISN_T_ENABLED: {
+  USER_NOT_ENABLED: {
     code: 32,
-    message: "User isn't enabled to do this action.",
-    type: "USER_ISN_T_ENABLED",
+    message: "Action denied: the user is not enabled.",
+    type: "USER_NOT_ENABLED",
   },
-  AUTH_ERROR_GENERIC: {
+  USER_NOT_VERIFIED: {
     code: 33,
-    message: "Error occurred while authenticating user '{email}': {error}",
-    type: "AUTH_ERROR_GENERIC",
+    message: "Action denied: the user is not verified.",
+    type: "USER_NOT_VERIFIED",
+  },
+  USER_ALREADY_VERIFIED: {
+    code: 34,
+    message: "Action denied: the user is already verified.",
+    type: "USER_ALREADY_VERIFIED",
+  },
+  USER_ROLE_NOT_ASSIGNED: {
+    code: 35,
+    message: "Action denied: the user does not have a role assigned.",
+    type: "USER_ROLE_NOT_ASSIGNED",
+  },
+  PROFILE_UPDATE_SUCCESS: {
+    code: 40,
+    message: 'User "{email} : {name}" has updated their profile successfully.',
+    type: "PROFILE_UPDATE_SUCCESS",
+  },
+  PROFILE_UPDATE_ERROR: {
+    code: 41,
+    message:
+      "An error occurred while updating the profile for '{email}': {error}",
+    type: "PROFILE_UPDATE_ERROR",
+  },
+  EMAIL_VERIFICATION_SUCCESS: {
+    code: 50,
+    message: 'Email verification successful for user "{email}".',
+    type: "EMAIL_VERIFICATION_SUCCESS",
+  },
+  EMAIL_VERIFICATION_ERROR: {
+    code: 51,
+    message:
+      "An error occurred during email verification for '{email}': {error}",
+    type: "EMAIL_VERIFICATION_ERROR",
+  },
+  EMAIL_VERIFICATION_SENT: {
+    code: 52,
+    message: 'Email verification sent to user "{email}".',
+    type: "EMAIL_VERIFICATION_SENT",
+  },
+  VERIFICATION_TOKEN_INVALID: {
+    code: 53,
+    message: "Invalid email verification token for '{email}'.",
+    type: "VERIFICATION_TOKEN_INVALID",
+  },
+  AUTH_GENERIC_ERROR: {
+    code: 33,
+    message:
+      "A generic authentication error occurred for user '{email}': {error}",
+    type: "AUTH_GENERIC_ERROR",
   },
 } as const;
 
