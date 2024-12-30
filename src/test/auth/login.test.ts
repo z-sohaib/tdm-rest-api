@@ -63,7 +63,7 @@ describe("Test login with email existe and invalid password", () => {
     expect(response.status).toBe(HttpCodes.Unauthorized.code);
     expect(response.body.status).toBe("error");
     expect(response.body.error).toBe(
-      formatString(authLogs.LOGIN_ERROR_INCORRECT_PASSWORD_FOUND.message, {
+      formatString(authLogs.LOGIN_ERROR_INVALID_INPUT.message, {
         email: "js_zouambia@esi.dz",
       }),
     );

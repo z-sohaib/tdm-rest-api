@@ -11,7 +11,6 @@ export interface OrderHistory {
 }
 
 export interface OrderI {
-  _id: any;
   userId: Types.ObjectId;
   restaurantId: Types.ObjectId;
   items: OrderItem[];

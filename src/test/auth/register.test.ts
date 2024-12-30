@@ -34,9 +34,9 @@ describe("Test register with valid email and password", () => {
       lastName: "zouambia",
     });
     expect(response.status).toBe(HttpCodes.Created.code);
-    expect(response.body.status).toBe(authLogs.REGISTER_SUCCESS.type);
+    expect(response.body.status).toBe(authLogs.REGISTRATION_SUCCESS.type);
     expect(response.body.message).toBe(
-      formatString(authLogs.REGISTER_SUCCESS.message, response.body.data),
+      formatString(authLogs.REGISTRATION_SUCCESS.message, response.body.data),
     );
     expect(response.body.data).toHaveProperty("token");
     await UserModel.deleteOne({ email: email }).exec();
@@ -54,11 +54,9 @@ describe("register with email already exist", () => {
     });
     expect(response.status).toBe(HttpCodes.BadRequest.code);
     expect(response.body.status).toBe("error");
-    expect(response.body.message).toBe(
-      authLogs.REGISTER_ERROR_EMAIL_EXIST.type,
-    );
+    expect(response.body.message).toBe(authLogs.REGISTRATION_EMAIL_EXISTS.type);
     expect(response.body.error).toBe(
-      formatString(authLogs.REGISTER_ERROR_EMAIL_EXIST.message, { email }),
+      formatString(authLogs.REGISTRATION_EMAIL_EXISTS.message, { email }),
     );
   });
 });

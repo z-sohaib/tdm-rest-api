@@ -86,7 +86,13 @@ export default class Logger {
       return await new Promise((resolve, reject) => {
         //@ts-ignore
         this.logger.query(
-          { level: logLevel, from, until: to },
+          {
+            from,
+            until: to,
+            rows: 100,
+            order: "desc",
+            fields: undefined,
+          },
           (err, results) => {
             if (err) reject(err);
             else resolve(results.file);

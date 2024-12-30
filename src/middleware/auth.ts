@@ -147,12 +147,12 @@ export const isLoggedIn = (
   next: NextFunction,
 ) => {
   if (req.user) {
-    if (req.user.enable) return next();
+    if (req.user.isVerified) return next();
     return ErrorResponse(
       res,
       HttpCodes.Unauthorized.code,
-      authLogs.USER_ISN_T_ENABLED.message,
-      authLogs.USER_ISN_T_ENABLED,
+      authLogs.USER_NOT_VERIFIED.message,
+      authLogs.USER_NOT_VERIFIED,
     );
   }
   ErrorResponse(

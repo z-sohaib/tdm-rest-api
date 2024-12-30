@@ -30,9 +30,9 @@ describe("Test the authback route with valid token ", () => {
     const response = await request(app).get(route).set("authorization", jwt);
 
     expect(response.status).toBe(HttpCodes.Accepted.code);
-    expect(response.body.status).toBe(authLogs.AUTH_BACK.type);
+    expect(response.body.status).toBe(authLogs.AUTH_BACK_SUCCESS.type);
     expect(response.body.message).toBe(
-      formatString(authLogs.AUTH_BACK.message, {
+      formatString(authLogs.AUTH_BACK_SUCCESS.message, {
         email: response.body.data.email,
         username:
           response.body.data.firstName + " " + response.body.data.lastName,

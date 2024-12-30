@@ -39,7 +39,12 @@ export type IAuthLogs =
   | "EMAIL_VERIFICATION_SUCCESS"
   | "EMAIL_VERIFICATION_ERROR"
   | "VERIFICATION_TOKEN_INVALID"
-  | "EMAIL_VERIFICATION_SENT";
+  | "EMAIL_VERIFICATION_SENT"
+  | "ERROR_WHILE_CHECKING_CREDENTIALS"
+  | "USER_ISN_T_ADMIN"
+  | "USER_ISN_T_USER"
+  | "USER_ISN_T_ENABLED"
+  | "USER_ISN_T_LOGGED";
 
 export const authLogs: IErrors<IAuthLogs> = {
   LOGIN_SUCCESS: {
@@ -240,6 +245,31 @@ export const authLogs: IErrors<IAuthLogs> = {
     message:
       "A generic authentication error occurred for user '{email}': {error}",
     type: "AUTH_GENERIC_ERROR",
+  },
+  ERROR_WHILE_CHECKING_CREDENTIALS: {
+    code: 60,
+    message: "An error occurred while checking user credentials",
+    type: "ERROR_WHILE_CHECKING_CREDENTIALS",
+  },
+  USER_ISN_T_ADMIN: {
+    code: 61,
+    message: "User does not have administrator privileges",
+    type: "USER_ISN_T_ADMIN",
+  },
+  USER_ISN_T_USER: {
+    code: 62,
+    message: "User does not have standard user privileges",
+    type: "USER_ISN_T_USER",
+  },
+  USER_ISN_T_ENABLED: {
+    code: 63,
+    message: "User account is not enabled",
+    type: "USER_ISN_T_ENABLED",
+  },
+  USER_ISN_T_LOGGED: {
+    code: 64,
+    message: "User is not logged in",
+    type: "USER_ISN_T_LOGGED",
   },
 } as const;
 
