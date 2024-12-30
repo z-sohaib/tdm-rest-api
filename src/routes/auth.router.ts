@@ -1,7 +1,4 @@
-import {
-  loginValidators,
-  registerValidators,
-} from "../services/auth/auth.validator";
+import {loginValidators,registerValidators,} from "../services/auth/auth.validator";
 import { SignIn, SignUp, AuthBack } from "../controller/auth.controller";
 import { Router } from "express";
 import { validator } from "../middleware/validator";
@@ -12,5 +9,6 @@ const authRouter = Router();
 authRouter.route("/login").post(loginValidators, validator, SignIn);
 authRouter.route("/register").post(registerValidators, validator, SignUp);
 authRouter.route("/").get(checkLogs, isLoggedIn, AuthBack);
+
 
 export default authRouter;
