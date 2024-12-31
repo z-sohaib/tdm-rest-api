@@ -36,6 +36,6 @@ router.delete(
 router.get("/menu/:restaurantId", MenuController.getMenuByRestaurantId);
 router.post("/menu", MenuController.addMenuItem);
 router.put("/menu/:menuItemId", MenuController.updateMenuItem);
-//router.delete("/menu/:menuItemId", MenuController.deleteMenuItem);
+router.get("/menuid/:menuId", MenuController.getMenuById);
 
 export default router;
