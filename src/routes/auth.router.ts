@@ -23,10 +23,10 @@ authRouter.route("/register").post(registerValidators, validator, SignUp);
 authRouter.route("/").get(checkLogs, isLoggedIn, AuthBack);
 authRouter.route("/verify/:token").get(VerifyAccount);
 authRouter
-  .route("/request-password-reset")
+  .route("/password/reset")
   .post(passwordResetRequestValidators, validator, RequestPasswordReset);
 authRouter
-  .route("/reset-password/:token")
+  .route("/password/reset/:token")
   .post(passwordResetValidators, validator, ResetPassword);
 
 export default authRouter;

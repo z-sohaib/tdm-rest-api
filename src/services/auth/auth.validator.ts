@@ -31,7 +31,7 @@ export const passwordResetRequestValidators = [
 ];
 
 export const passwordResetValidators = [
-  body("password")
+  body("newPassword")
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long"),
   body("confirmPassword")

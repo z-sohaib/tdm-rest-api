@@ -131,7 +131,7 @@ export class AuthServices {
         email,
         password,
         name,
-        phoneNumber,
+        phone: phoneNumber,
       });
 
       // Generate verification token and expiry
@@ -375,7 +375,6 @@ export class AuthServices {
         resetPasswordToken: token,
         resetPasswordTokenExpiry: { $gt: new Date() },
       });
-
       if (!user) {
         const msg = formatString(authLogs.USER_NOT_FOUND_BY_TOKEN.message, {
           token,
