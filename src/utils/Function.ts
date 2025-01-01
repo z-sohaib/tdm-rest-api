@@ -37,3 +37,7 @@ export function getCookiesSettings(stay: boolean = false): CookieOptions {
 export function generateRandomToken() {
   return randomBytes(32).toString("hex");
 }
+
+export function generateRandomCode() {
+  return Math.floor(10000 + Math.random() * 90000).toString();
+}

@@ -5,7 +5,11 @@ import { Sign } from "../../utils/jwt";
 import { HttpCodes } from "../../config/Errors";
 import { ErrorResponseC, SuccessResponseC } from "./../services.response";
 import { Response } from "express";
-import { generateRandomToken, getCookiesSettings } from "../../utils/Function";
+import {
+  generateRandomCode,
+  generateRandomToken,
+  getCookiesSettings,
+} from "../../utils/Function";
 import { SendEmail } from "../../utils/Email";
 
 export class AuthServices {
@@ -145,7 +149,7 @@ export class AuthServices {
       await SendEmail({
         to: email,
         subject: "Account Verification",
-        text: `Please verify your account by clicking on the link: ${process.env.FRONTEND_URL}/verify/${user.verificationToken}`,
+        text: `Please verify your account by clicking on the link: ${process.env.HOST_URL}/api/auth/verify/${user.verificationToken}`,
       });
 
       // Log verification email sent
@@ -326,14 +330,14 @@ export class AuthServices {
         );
       }
 
-      user.resetPasswordToken = generateRandomToken();
+      user.resetPasswordToken = generateRandomCode();
       user.resetPasswordTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
       await user.save();
 
       await SendEmail({
         to: email,
         subject: "Password Reset",
-        text: `Reset your password using the following link: ${process.env.FRONTEND_URL}/reset-password/${user.resetPasswordToken}`,
+        text: `Use this following code to reset your password: ${user.resetPasswordToken}`,
       });
 
       const msg = formatString(authLogs.RESET_PASSWORD_EMAIL_SENT.message, {
@@ -342,7 +346,11 @@ export class AuthServices {
       authLogger.info(msg);
       return new SuccessResponseC(
         authLogs.RESET_PASSWORD_EMAIL_SENT.type,
-        null,
+        {
+          email: user.email,
+          token: user.resetPasswordToken,
+          tokenExpiry: user.resetPasswordTokenExpiry,
+        },
         msg,
         HttpCodes.OK.code,
       );
