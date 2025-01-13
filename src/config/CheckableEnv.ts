@@ -49,5 +49,15 @@ export const CLOUDINARY_API_SECRET = CheckEnv(
   ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
 );
 
+export const FIREBASE_PRIVATE_KEY_ID = CheckEnv(
+  "FIREBASE_PRIVATE_KEY_ID",
+  ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
+);
+
+export const FIREBASE_PRIVATE_KEY = CheckEnv(
+  "FIREBASE_PRIVATE_KEY",
+  ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
+);
+
 log("--------------------------------------------------------\n");
 EnvEmitter.emit("loaded");
