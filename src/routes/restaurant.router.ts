@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { RestaurantController } from "../controller/restaurant.controller";
-// import { validateRestaurant } from "../middleware/restaurant";
 import { checkLogs, isAdmin, isLoggedIn } from "../middleware/auth";
 import { MenuController } from "../controller/menu.controller";
+import { upload, uploadToCloudinary } from "../middleware/file";
 
 const router = Router();
 
@@ -10,6 +10,8 @@ router.post(
   "/restaurants",
   checkLogs,
   isLoggedIn,
+  upload.single("image"),
+  uploadToCloudinary,
   RestaurantController.createRestaurant,
 );
 router.get("/restaurants", checkLogs, RestaurantController.getAllRestaurants);
@@ -34,7 +36,14 @@ router.delete(
 );
 
 router.get("/menu/:restaurantId", MenuController.getMenuByRestaurantId);
-router.post("/menu", MenuController.addMenuItem);
+router.post(
+  "/menu",
+  checkLogs,
+  isLoggedIn,
+  upload.single("image"),
+  uploadToCloudinary,
+  MenuController.addMenuItem,
+);
 router.put("/menu/:menuItemId", MenuController.updateMenuItem);
 router.get("/menuid/:menuId", MenuController.getMenuById);
 

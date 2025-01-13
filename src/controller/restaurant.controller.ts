@@ -10,7 +10,11 @@ export class RestaurantController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const restaurant = await RestaurantService.create(req.body);
+      const restaurantData = {
+        ...req.body,
+        image: req.body.fileUrl, // Use the uploaded file URL from Cloudinary
+      };
+      const restaurant = await RestaurantService.create(restaurantData);
       res.status(201).json(restaurant);
     } catch (error) {
       Logger.error("Error creating restaurant", error);
