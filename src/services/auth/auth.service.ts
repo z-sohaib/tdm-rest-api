@@ -114,6 +114,7 @@ export class AuthServices {
     phoneNumber: string,
     stay: boolean,
     res: Response,
+    fileUrl?: string, // Add optional fileUrl parameter
   ): Promise<ResponseT> => {
     try {
       // Check if the user already exists
@@ -130,12 +131,13 @@ export class AuthServices {
         );
       }
 
-      // Create the new user
+      // Create the new user with image if provided
       const user = new UserModel({
         email,
         password,
         name,
         phone: phoneNumber,
+        image: fileUrl || null, // Add the image URL if it exists
       });
 
       // Generate verification token and expiry

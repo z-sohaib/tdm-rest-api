@@ -13,6 +13,11 @@ export interface MyRequest<
   user?: Req extends UsersTypes ? Req : Req | null;
 }
 
+// export interface FileUploadBody {
+//   fileUrl?: string;
+//   publicId?: string;
+// }
+
 export interface UserRouter<T extends UsersTypes | null> {
   controller: (req: MyRequest<T>, res: Response, next: NextFunction) => any;
 }

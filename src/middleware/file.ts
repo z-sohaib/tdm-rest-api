@@ -1,95 +1,155 @@
 import { NextFunction, Request, Response } from "express";
-import multer, { FileFilterCallback } from "multer";
-import { StaticRoot, sizeLimit } from "../config/Env";
+import multer from "multer";
 import fs from "fs/promises";
-import path from "path";
-import { ErrorResponse, SuccessResponse } from "../utils/Response";
+import cloudinary from "../config/Cloudinary";
+import { ErrorResponse } from "../utils/Response";
 import { HttpCodes } from "../config/Errors";
+import { fileLogger, fileLogs } from "../services/files/files.logs";
+import { formatString } from "../utils/Strings";
 
-/**
- * @description  The file storage configuration
- *
- */
-
-export const fileStorage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    const location = req.query.location ? String(req.query.location) : "";
-    const destination = path.join(StaticRoot, "uploads", location);
-    // create folder if not exists
-    fs.mkdir(destination, { recursive: true })
-      .then(() => {
-        callback(null, destination);
-      })
-      .catch((e) => {
-        callback({ name: "Creating Folder", message: e.message }, destination);
-      });
+// Configure local storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "tmp/");
   },
-  filename: (_, file, callback) => {
-    const name = Date.now() + path.extname(file.originalname);
-    callback(null, name);
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 
-/**
- * @description  The file filter configuration
- *
- */
+// Create multer upload instance
+export const upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+});
 
-export const fileFilter = (
-  request: Request,
-  file: Express.Multer.File,
-  callback: FileFilterCallback,
-): void => {
-  const acceptedMimeTypes = ["application/zip", "application/x-zip-compressed"];
-  if (acceptedMimeTypes.includes(file.mimetype)) {
-    if (file.size > sizeLimit)
-      return callback(new Error("File size must be less than 5MB"));
-    callback(null, true);
-  } else {
-    callback(new Error(`Invalid file type ${file.mimetype}`));
+export const uploadToCloudinary = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.file) {
+      fileLogger.warn(fileLogs.FILE_UPLOAD_NO_FILE.type);
+      return ErrorResponse(
+        res,
+        HttpCodes.BadRequest.code,
+        fileLogs.FILE_UPLOAD_NO_FILE.message,
+      );
+    }
+
+    const result = await cloudinary.uploader.upload(req.file.path);
+
+    // Clean up local file after successful upload
+    await fs.unlink(req.file.path);
+
+    // Attach the file information to req.body
+    req.body.fileUrl = result.secure_url;
+    const msg = formatString(fileLogs.FILE_UPLOAD_SUCCESS.message, {
+      filename: req.file.originalname,
+    });
+    fileLogger.info(msg, { type: fileLogs.FILE_UPLOAD_SUCCESS.type });
+    next();
+  } catch (error: any) {
+    // Clean up local file on error
+    if (req.file) {
+      await fs.unlink(req.file.path).catch(() => {});
+    }
+
+    if (error.http_code === 400) {
+      fileLogger.error(fileLogs.FILE_UPLOAD_INVALID_FORMAT.type, {
+        filename: req?.file?.originalname,
+      });
+      return ErrorResponse(
+        res,
+        HttpCodes.BadRequest.code,
+        fileLogs.FILE_UPLOAD_INVALID_FORMAT.message,
+      );
+    } else if (error.http_code === 401) {
+      fileLogger.error(fileLogs.FILE_UPLOAD_UNAUTHORIZED.type);
+      return ErrorResponse(
+        res,
+        HttpCodes.Unauthorized.code,
+        fileLogs.FILE_UPLOAD_UNAUTHORIZED.message,
+      );
+    } else if (error.code === "ENOSPC") {
+      fileLogger.error(fileLogs.FILE_UPLOAD_STORAGE_FULL.type);
+      return ErrorResponse(
+        res,
+        HttpCodes.InternalServerError.code,
+        fileLogs.FILE_UPLOAD_STORAGE_FULL.message,
+      );
+    } else if (error.code === "LIMIT_FILE_SIZE") {
+      fileLogger.error(fileLogs.FILE_UPLOAD_SIZE_EXCEEDED.type, {
+        filename: req?.file?.originalname,
+      });
+      return ErrorResponse(
+        res,
+        HttpCodes.BadRequest.code,
+        fileLogs.FILE_UPLOAD_SIZE_EXCEEDED.message,
+      );
+    }
+
+    fileLogger.error(fileLogs.FILE_UPLOAD_GENERIC_ERROR.type, {
+      filename: req?.file?.originalname,
+      error: error.message,
+    });
+    return ErrorResponse(
+      res,
+      HttpCodes.InternalServerError.code,
+      fileLogs.FILE_UPLOAD_GENERIC_ERROR.message,
+      error,
+    );
   }
 };
 
-/**
- *
- * @description  Upload a file
- */
-// this is for endpoint not util funct
-export const UploadFile = async (req: Request, res: Response) => {
-  if (!req.file)
-    return ErrorResponse(res, HttpCodes.BadRequest.code, "No file received");
-  return SuccessResponse(
-    res,
-    HttpCodes.Accepted.code,
-    {
-      name: req.file.filename,
-      originalname: req.file.originalname,
-      location: req.query.location,
-      size: req.file.size,
-      url: `${req.protocol}://${req.get("host")}/media/uploads/${req.query.location ? req.query.location + "/" : ""}${req.file.filename}`,
-    },
-    `File ${req.file.originalname} has been uploaded`,
-  );
-};
+export const deleteFile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { public_id } = req.body;
+    if (!public_id) {
+      fileLogger.warn(fileLogs.FILE_DELETE_NO_ID.type);
+      return ErrorResponse(
+        res,
+        HttpCodes.BadRequest.code,
+        fileLogs.FILE_DELETE_NO_ID.message,
+      );
+    }
 
-/**
- *  @description  Delete a file
- */
-// same thing here
-export const DeleteFile = (req: Request, res: Response, next: NextFunction) => {
-  const { name } = req.body;
-  const p = path.join(StaticRoot, "uploads", name);
-  fs.unlink(p)
-    .then(() => {
-      res.json({
-        name: "Deleting File",
-        message: "File has been deleted",
+    const result = await cloudinary.uploader.destroy(public_id);
+    if (result.result !== "ok") {
+      fileLogger.error(fileLogs.FILE_DELETE_FAILED.type, {
+        publicId: public_id,
       });
-    })
-    .catch((e) => {
-      next({ name: "Deleting File", message: e.message });
+      return ErrorResponse(
+        res,
+        HttpCodes.BadRequest.code,
+        fileLogs.FILE_DELETE_FAILED.message,
+      );
+    }
+
+    const msg = formatString(fileLogs.FILE_DELETE_SUCCESS.message, {
+      publicId: public_id,
     });
+    fileLogger.info(msg, { type: fileLogs.FILE_DELETE_SUCCESS.type });
+    next();
+  } catch (error: any) {
+    fileLogger.error(fileLogs.FILE_DELETE_GENERIC_ERROR.type, {
+      publicId: req.body.public_id,
+      error: error.message,
+    });
+    return ErrorResponse(
+      res,
+      HttpCodes.InternalServerError.code,
+      fileLogs.FILE_DELETE_GENERIC_ERROR.message,
+      error,
+    );
+  }
 };
 
-const upload = multer({ storage: fileStorage, fileFilter: fileFilter });
 export default upload;

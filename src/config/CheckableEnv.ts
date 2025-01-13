@@ -36,5 +36,18 @@ export const EmailPass = CheckEnv(
   ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
 );
 
+export const CLOUDINARY_CLOUD_NAME = CheckEnv(
+  "CLOUDINARY_CLOUD_NAME",
+  ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
+);
+export const CLOUDINARY_API_KEY = CheckEnv(
+  "CLOUDINARY_API_KEY",
+  ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
+);
+export const CLOUDINARY_API_SECRET = CheckEnv(
+  "CLOUDINARY_API_SECRET",
+  ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
+);
+
 log("--------------------------------------------------------\n");
 EnvEmitter.emit("loaded");

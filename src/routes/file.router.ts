@@ -1,6 +1,7 @@
-import { Router } from "express";
-import upload, { UploadFile, DeleteFile } from "../middleware/file";
-import { checkLogs, isAdmin, isLoggedIn } from "../middleware/auth";
+import { Router, Request, Response } from "express";
+import { upload, uploadToCloudinary, deleteFile } from "../middleware/file";
+import { checkLogs } from "../middleware/auth";
+import { SuccessResponse } from "../utils/Response";
 
 const router = Router();
 
@@ -8,8 +9,23 @@ const router = Router();
 
 router
   .route("/")
-  .all(checkLogs, isLoggedIn, isAdmin)
-  .post(upload.single("file"), UploadFile)
-  .delete(DeleteFile);
+  .all(checkLogs)
+  .post(
+    upload.single("file"),
+    uploadToCloudinary,
+    (req: Request, res: Response) => {
+      return SuccessResponse(res, 200, {
+        message: "File uploaded successfully",
+        url: req.body.fileUrl,
+        public_id: req.body.publicId,
+      });
+    },
+  )
+  .delete(deleteFile, (req: Request, res: Response) => {
+    return SuccessResponse(res, 200, {
+      message: "File deleted successfully",
+    });
+  });
+
 console.log("🗃️ Files upload is on");
 export default router;
