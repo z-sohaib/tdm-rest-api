@@ -3,6 +3,7 @@ import {
   registerValidators,
   passwordResetRequestValidators,
   passwordResetValidators,
+  googleAuthValidators,
 } from "../services/auth/auth.validator";
 import {
   SignIn,
@@ -11,6 +12,7 @@ import {
   VerifyAccount,
   RequestPasswordReset,
   ResetPassword,
+  GoogleAuth,
 } from "../controller/auth.controller";
 import { Router } from "express";
 import { validator } from "../middleware/validator";
@@ -35,5 +37,6 @@ authRouter
 authRouter
   .route("/password/reset/:token")
   .post(passwordResetValidators, validator, ResetPassword);
+authRouter.route("/google").post(googleAuthValidators, validator, GoogleAuth);
 
 export default authRouter;

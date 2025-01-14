@@ -43,3 +43,7 @@ export const passwordResetValidators = [
     })
     .withMessage("Passwords do not match"),
 ];
+
+export const googleAuthValidators = [
+  body("idToken").notEmpty().withMessage("Google ID token is required"),
+];

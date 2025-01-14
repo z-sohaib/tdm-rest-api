@@ -122,3 +122,21 @@ export const ResetPassword = async (req: MyRequest<UserD>, res: Response) => {
   if (result instanceof ErrorResponseC)
     return ErrorResponse(res, result.code, result.message, result.error);
 };
+
+// Google Auth Endpoint
+export const GoogleAuth = async (req: MyRequest<UserD>, res: Response) => {
+  const { idToken } = req.body;
+  const stay = req.body.stay || false;
+
+  const result = await AuthServices.executeGoogleAuth(idToken, stay, res);
+  if (result instanceof SuccessResponseC)
+    return SuccessResponse(
+      res,
+      result.code,
+      result.data,
+      result.message,
+      result.status,
+    );
+  if (result instanceof ErrorResponseC)
+    return ErrorResponse(res, result.code, result.message, result.error);
+};

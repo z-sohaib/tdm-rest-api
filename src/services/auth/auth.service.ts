@@ -11,6 +11,8 @@ import {
   getCookiesSettings,
 } from "../../utils/Function";
 import { SendEmail } from "../../utils/Email";
+import { oauth2Client } from "../../config/Google";
+import { GOOGLE_CLIENT_ID } from "../../config/CheckableEnv";
 
 export class AuthServices {
   /**
@@ -436,6 +438,82 @@ export class AuthServices {
       authLogger.error(msg, err as Error);
       return new ErrorResponseC(
         authLogs.RESET_PASSWORD_GENERIC_ERROR.type,
+        HttpCodes.InternalServerError.code,
+        msg,
+      );
+    }
+  };
+
+  static executeGoogleAuth = async (
+    idToken: string,
+    stay: boolean,
+    res: Response,
+  ): Promise<ResponseT> => {
+    try {
+      // Verify the token received from frontend
+      const ticket = await oauth2Client.verifyIdToken({
+        idToken,
+        audience: GOOGLE_CLIENT_ID,
+      });
+
+      const payload = ticket.getPayload();
+      if (!payload) {
+        throw new Error("Invalid token payload");
+      }
+
+      const { email, name, picture, sub: googleId } = payload;
+      let user = await UserModel.findOne({ email });
+
+      if (!user) {
+        // Create new user if doesn't exist
+        user = new UserModel({
+          email,
+          name,
+          image: picture,
+          googleId,
+          password: generateRandomToken(),
+          isVerified: true,
+          phone: "",
+          role: "user",
+        });
+        await user.save();
+      } else if (!user.googleId) {
+        // Link Google account to existing user
+        user.googleId = googleId;
+        user.image = picture;
+        await user.save();
+      }
+
+      if (!user.role) {
+        const msg = formatString(authLogs.USER_ROLE_NOT_ASSIGNED.message, {
+          email,
+        });
+        authLogger.error(msg);
+        return new ErrorResponseC(
+          authLogs.USER_ROLE_NOT_ASSIGNED.type,
+          HttpCodes.Forbidden.code,
+          msg,
+        );
+      }
+
+      // Generate JWT token and set cookie
+      const token = Sign({ _id: user._id.toString(), role: user.role });
+      res.cookie("token", token, getCookiesSettings(stay));
+
+      return new SuccessResponseC(
+        authLogs.LOGIN_SUCCESS.type,
+        { ...user.Optimize(), token },
+        formatString(authLogs.LOGIN_SUCCESS.message, user.toObject()),
+        HttpCodes.Accepted.code,
+      );
+    } catch (err) {
+      const msg = formatString(authLogs.LOGIN_ERROR_GENERIC.message, {
+        error: (err as Error)?.message || "",
+        email: "Google Auth",
+      });
+      authLogger.error(msg, err as Error);
+      return new ErrorResponseC(
+        authLogs.LOGIN_ERROR_GENERIC.type,
         HttpCodes.InternalServerError.code,
         msg,
       );

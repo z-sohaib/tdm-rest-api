@@ -59,5 +59,20 @@ export const FIREBASE_PRIVATE_KEY = CheckEnv(
   ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
 );
 
+export const GOOGLE_CLIENT_ID = CheckEnv(
+  "GOOGLE_CLIENT_ID",
+  ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
+);
+
+export const GOOGLE_CLIENT_SECRET = CheckEnv(
+  "GOOGLE_CLIENT_SECRET",
+  ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
+);
+
+export const GOOGLE_REDIRECT_URI = CheckEnv(
+  "GOOGLE_REDIRECT_URI",
+  ExitCodes.ENV_ERROR_COULDNT_FIND_FIELD,
+);
+
 log("--------------------------------------------------------\n");
 EnvEmitter.emit("loaded");
