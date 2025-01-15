@@ -1,4 +1,4 @@
-import { firebaseAdmin } from "config/Firebase";
+import { firebaseAdmin } from "../../config/Firebase";
 import { Schema, model, Document, Model } from "mongoose";
 
 export interface DeviceTokenI {
