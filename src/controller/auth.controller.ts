@@ -10,8 +10,15 @@ import {
 
 // Sign In Endpoint
 export const SignIn = async (req: MyRequest<UserD>, res: Response) => {
-  const { email, password, stay = false } = req.body;
-  const result = await AuthServices.executeLogin(email, password, stay, res);
+  const { email, password, stay = false, fcmToken, deviceId } = req.body;
+  const result = await AuthServices.executeLogin(
+    email,
+    password,
+    stay,
+    res,
+    fcmToken,
+    deviceId,
+  );
   if (result instanceof SuccessResponseC)
     return SuccessResponse(
       res,
@@ -32,6 +39,8 @@ export const SignUp = async (req: MyRequest<UserD>, res: Response) => {
     name,
     phoneNumber,
     stay = false,
+    fcmToken,
+    deviceId,
     // fileUrl,
   } = req.body;
   const result = await AuthServices.executeRegister(
@@ -39,8 +48,10 @@ export const SignUp = async (req: MyRequest<UserD>, res: Response) => {
     password,
     name,
     phoneNumber,
+    fcmToken,
     stay,
     res,
+    deviceId,
     // fileUrl, // Pass the fileUrl from uploadToCloudinary middleware
   );
   if (result instanceof SuccessResponseC)
@@ -125,10 +136,14 @@ export const ResetPassword = async (req: MyRequest<UserD>, res: Response) => {
 
 // Google Auth Endpoint
 export const GoogleAuth = async (req: MyRequest<UserD>, res: Response) => {
-  const { idToken } = req.body;
-  const stay = req.body.stay || false;
-
-  const result = await AuthServices.executeGoogleAuth(idToken, stay, res);
+  const { idToken, stay = false, fcmToken, deviceId } = req.body;
+  const result = await AuthServices.executeGoogleAuth(
+    idToken,
+    stay,
+    res,
+    fcmToken,
+    deviceId,
+  );
   if (result instanceof SuccessResponseC)
     return SuccessResponse(
       res,

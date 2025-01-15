@@ -13,6 +13,7 @@ import {
 import { SendEmail } from "../../utils/Email";
 import { oauth2Client } from "../../config/Google";
 import { GOOGLE_CLIENT_ID } from "../../config/CheckableEnv";
+import { saveDeviceToken } from "../../db/models/dtoken";
 
 export class AuthServices {
   /**
@@ -26,6 +27,8 @@ export class AuthServices {
     password: string,
     stay: boolean,
     res: Response,
+    fcmToken?: string,
+    deviceId?: string,
   ): Promise<ResponseT> => {
     try {
       const user = await UserModel.findOne({ email });
@@ -55,6 +58,17 @@ export class AuthServices {
             );
           }
           const token = Sign({ _id: user._id.toString(), role: user.role });
+
+          // Save FCM token if provided
+          if (fcmToken && deviceId) {
+            try {
+              await saveDeviceToken(user._id.toString(), fcmToken, deviceId);
+            } catch (err) {
+              authLogger.error(`Failed to save FCM token: ${err}`);
+              // Continue with login even if FCM token registration fails
+            }
+          }
+
           const resp: ICode<IAuthLogs> = authLogs.LOGIN_SUCCESS;
           const msg = formatString(resp.message, user.toObject());
           authLogger.info(msg, { type: resp.type });
@@ -114,6 +128,7 @@ export class AuthServices {
     password: string,
     name: string,
     phoneNumber: string,
+    deviceId: string,
     stay: boolean,
     res: Response,
     fileUrl?: string, // Add optional fileUrl parameter
@@ -448,6 +463,8 @@ export class AuthServices {
     idToken: string,
     stay: boolean,
     res: Response,
+    fcmToken?: string,
+    deviceId?: string,
   ): Promise<ResponseT> => {
     try {
       // Verify the token received from frontend
@@ -494,6 +511,16 @@ export class AuthServices {
           HttpCodes.Forbidden.code,
           msg,
         );
+      }
+
+      // Save FCM token if provided
+      if (fcmToken && deviceId) {
+        try {
+          await saveDeviceToken(user._id.toString(), fcmToken, deviceId);
+        } catch (err) {
+          authLogger.error(`Failed to save FCM token: ${err}`);
+          // Continue with login even if FCM token registration fails
+        }
       }
 
       // Generate JWT token and set cookie
