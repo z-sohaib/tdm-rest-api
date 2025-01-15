@@ -14,7 +14,7 @@ export const CreateOrder = async (
 ) => {
   const orderData = {
     ...req.body,
-    userId: req.user!._id,
+    // userId: req.user!._id,
   };
   const result = await OrderServices.executeCreateOrder(orderData);
   if (result instanceof SuccessResponseC)
