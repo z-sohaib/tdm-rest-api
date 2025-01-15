@@ -45,5 +45,6 @@ router.post(
 );
 router.put("/menu/:menuItemId", MenuController.updateMenuItem);
 router.get("/menuid/:menuId", MenuController.getMenuById);
+router.get("/search", RestaurantController.searchRestaurants);
 
 export default router;

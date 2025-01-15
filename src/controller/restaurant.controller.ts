@@ -92,4 +92,19 @@ export class RestaurantController {
       next(error);
     }
   };
+
+  static searchRestaurants = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const query = req.query.q as string; // Le texte de recherche
+      const restaurants = await RestaurantService.search(query);
+      res.status(200).json(restaurants);
+    } catch (error) {
+      Logger.error("Error searching restaurants", error);
+      next(error);
+    }
+  };
 }
