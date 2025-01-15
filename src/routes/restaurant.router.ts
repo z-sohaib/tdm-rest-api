@@ -18,7 +18,6 @@ router.get("/restaurants", checkLogs, RestaurantController.getAllRestaurants);
 router.get(
   "/restaurants/:id",
   checkLogs,
-  isLoggedIn,
   RestaurantController.getRestaurantById,
 );
 router.put(
