@@ -17,14 +17,14 @@ import {
 import { Router } from "express";
 import { validator } from "../middleware/validator";
 import { checkLogs, isLoggedIn } from "../middleware/auth";
-import { upload, uploadToCloudinary } from "../middleware/file";
+// import { upload, uploadToCloudinary } from "../middleware/file";
 
 const authRouter = Router();
 
 authRouter.route("/login").post(loginValidators, validator, SignIn);
 authRouter.route("/register").post(
-  upload.single("image"), // Add file upload middleware
-  uploadToCloudinary, // Add cloudinary upload middleware
+  // upload.single("image"), // Add file upload middleware
+  // uploadToCloudinary, // Add cloudinary upload middleware
   registerValidators,
   validator,
   SignUp,

@@ -32,7 +32,7 @@ export const SignUp = async (req: MyRequest<UserD>, res: Response) => {
     name,
     phoneNumber,
     stay = false,
-    fileUrl,
+    // fileUrl,
   } = req.body;
   const result = await AuthServices.executeRegister(
     email,
@@ -41,7 +41,7 @@ export const SignUp = async (req: MyRequest<UserD>, res: Response) => {
     phoneNumber,
     stay,
     res,
-    fileUrl, // Pass the fileUrl from uploadToCloudinary middleware
+    // fileUrl, // Pass the fileUrl from uploadToCloudinary middleware
   );
   if (result instanceof SuccessResponseC)
     return SuccessResponse(
