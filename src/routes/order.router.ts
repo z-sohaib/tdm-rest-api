@@ -11,12 +11,12 @@ import {
 
 const orderRouter = Router();
 
-orderRouter.post("/orders", checkLogs, isLoggedIn, CreateOrder);
-orderRouter.get("/orders/:orderId", checkLogs, isLoggedIn, GetOrder);
+orderRouter.post("/orders", checkLogs, CreateOrder); // add isLoggedIn later
+orderRouter.get("/orders/:orderId", checkLogs, GetOrder); // add isLoggedIn later
 orderRouter.put(
   "/orders/:orderId/status",
   checkLogs,
-  isLoggedIn,
+  // isLoggedIn,
   UpdateOrderStatus,
 );
 orderRouter.put("/orders/:orderId/cancel", checkLogs, isLoggedIn, CancelOrder);
